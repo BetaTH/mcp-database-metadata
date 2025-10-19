@@ -24,6 +24,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
+      - name: Verify files
+        run: ls
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -36,10 +39,10 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           npm version patch -m "chore(release): publish %s"
 
-      - name: Publish to NPM
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Publish to NPM
+      #   run: npm publish --access public
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push changes
         run: git push
