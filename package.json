@@ -1,6 +1,6 @@
 {
 	"name": "mcp-database-metadata",
-	"version": "2.0.1",
+	"version": "2.1.0",
 	"description": "MCP (Model Context Protocol) para buscar metadados de tabelas de banco de dados.",
 	"main": "dist/index.js",
 	"bin": {
