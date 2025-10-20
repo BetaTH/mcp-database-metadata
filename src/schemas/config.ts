@@ -20,7 +20,7 @@ const databaseConnectionsConfigSchema = z
 	.describe("Configurações para conexão com o banco de dados");
 
 export const configSchema = z.object({
-	databasesConnections: databaseConnectionsConfigSchema,
+	databaseConnections: databaseConnectionsConfigSchema,
 });
 
 export type Config = z.infer<typeof configSchema>;

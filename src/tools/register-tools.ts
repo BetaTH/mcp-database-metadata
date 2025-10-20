@@ -11,11 +11,11 @@ import { createGetDatabaseConnectionsAvailableToolFunction } from "./get-databas
 function registerTools(server: McpServer, config?: Config) {
 	if (config) {
 		const getTableDetails = createGetTableDetailsToolFunction(
-			config.databasesConnections,
+			config.databaseConnections,
 		);
 		const getDatabaseConnectionsAvailable =
 			createGetDatabaseConnectionsAvailableToolFunction(
-				config.databasesConnections,
+				config.databaseConnections,
 			);
 
 		server.registerTool(
