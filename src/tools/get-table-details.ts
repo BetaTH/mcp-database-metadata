@@ -2,7 +2,7 @@ import {
 	TableDetailsRequest,
 	TableDetailsResponse,
 } from "../schemas/get-table-details";
-import { DatabasesConfig } from "../schemas/config";
+import { DatabaseConnections } from "../schemas/config";
 import { getDbConnection } from "./database/get-db-connection";
 import { getMetadataFetcher } from "./database/metadata-fetcher";
 import { getColumnDetails } from "./database/get-column-details";
@@ -10,16 +10,18 @@ import { getColumnDetails } from "./database/get-column-details";
 /**
  * Cria dinamicamente a função que busca os detalhes de uma tabela específica em um banco de dados.
  */
-export function createGetTableDetailsToolFunction(databases: DatabasesConfig) {
+export function createGetTableDetailsToolFunction(
+	databaseConnections: DatabaseConnections,
+) {
 	const getTableDetails = async ({
 		connectionName,
 		tableName,
 	}: TableDetailsRequest): Promise<TableDetailsResponse> => {
-		const db = getDbConnection(connectionName, databases);
+		const db = getDbConnection(connectionName, databaseConnections);
 
 		// biome-ignore lint/style/noNonNullAssertion: <explanation>
-		const databaseName = databases.find(
-			(dbConfig) => dbConfig.name === connectionName,
+		const databaseName = databaseConnections.find(
+			(dbConnection) => dbConnection.connectionName === connectionName,
 		)!.config.connection.database;
 
 		const fetcher = getMetadataFetcher(db.client.config.client);

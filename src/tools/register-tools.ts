@@ -3,27 +3,31 @@ import {
 	tableDetailsRequestSchema,
 	tableDetailsResponseSchema,
 } from "../schemas/get-table-details";
-import { createGetDatabasesAvailableToolFunction } from "./get-databases-available";
 import { createGetTableDetailsToolFunction } from "./get-table-details";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getDatabasesAvailableResponse } from "../schemas/get-databases-available";
+import { getDatabaseConnectionsAvailableResponse } from "../schemas/get-database-connections-available";
+import { createGetDatabaseConnectionsAvailableToolFunction } from "./get-databases-connections-available";
 
 function registerTools(server: McpServer, config?: Config) {
 	if (config) {
-		const getTableDetails = createGetTableDetailsToolFunction(config.databases);
-		const getDatabasesAvailable = createGetDatabasesAvailableToolFunction(
-			config.databases,
+		const getTableDetails = createGetTableDetailsToolFunction(
+			config.databasesConnections,
 		);
+		const getDatabaseConnectionsAvailable =
+			createGetDatabaseConnectionsAvailableToolFunction(
+				config.databasesConnections,
+			);
 
 		server.registerTool(
 			"get-databases-available",
 			{
 				title: "Banco de dados disponíveis",
-				description: "Retorna o nome dos bancos disponíveis",
-				outputSchema: getDatabasesAvailableResponse.shape,
+				description:
+					"Retorna o nome das conexões de banco de dados disponíveis",
+				outputSchema: getDatabaseConnectionsAvailableResponse.shape,
 			},
 			async () => {
-				const output = await getDatabasesAvailable();
+				const output = await getDatabaseConnectionsAvailable();
 				return {
 					content: [{ type: "text", text: JSON.stringify(output) }],
 					structuredContent: output,

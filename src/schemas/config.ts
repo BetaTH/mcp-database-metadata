@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 // Esquema para a configuração do banco de dados
-const databasesConfigSchema = z
+const databaseConnectionsConfigSchema = z
 	.array(
 		z.object({
-			name: z.string(),
+			connectionName: z.string(),
 			config: z.object({
 				client: z.string(),
 				connection: z.object({
@@ -20,8 +20,10 @@ const databasesConfigSchema = z
 	.describe("Configurações para conexão com o banco de dados");
 
 export const configSchema = z.object({
-	databases: databasesConfigSchema,
+	databasesConnections: databaseConnectionsConfigSchema,
 });
 
 export type Config = z.infer<typeof configSchema>;
-export type DatabasesConfig = z.infer<typeof databasesConfigSchema>;
+export type DatabaseConnections = z.infer<
+	typeof databaseConnectionsConfigSchema
+>;
