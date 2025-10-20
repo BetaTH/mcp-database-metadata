@@ -231,15 +231,15 @@ await queryRunner.query(\`
 
 ---
 
-**User Instructions:**
-
-${args.userInstructions}
-
 **Additional Instructions:**
 
 - Don't forget to write the migration code to the file that was created.
 - Avoid using the "\`" character (backtick, grave accent) within queries because, as it is JavaScript, this character starts a string. Use it only to start and close the query string.
 - If the query string has only ONE LINE, start and close the query string with the character "'" (apostrophe).
+
+**User Instructions:**
+
+${args.userInstructions ?? ""}
 `;
 
 export { agrotraceMigration };
