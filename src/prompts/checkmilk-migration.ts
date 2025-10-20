@@ -24,7 +24,8 @@ This project uses a meticulous audit trail system for every database table. For 
 *   SQL keywords should be in \`UPPERCASE\`.
 *   Each step within the \`up()\` and \`down()\` methods should be a separate \`await queryRunner.query(...)\` call.
 *   The \`down()\` method must perfectly reverse the operations of the \`up()\` method, ensuring the database can be reverted to its previous state.
-
+*   the identifier columns should use \`SERIAL PRIMARY KEY\` for auto-incrementing IDs. And use "id_" prefix for primary key columns (e.g., \`id_form_pergunta\`).
+*   the foreign key columns should be equal to the referenced primary key column name (e.g., \`INT\` for \`id_certificadora\` if it references \`certificadora(id_certificadora)\`).
 ---
 
 ### **Scenario 1: Creating a New Table**
