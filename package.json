@@ -1,6 +1,6 @@
 {
 	"name": "mcp-database-metadata",
-	"version": "2.1.5",
+	"version": "2.2.0",
 	"description": "MCP (Model Context Protocol) para buscar metadados de tabelas de banco de dados.",
 	"main": "dist/index.js",
 	"bin": {
@@ -21,7 +21,14 @@
 		"dev": "ts-node-dev src/index.ts",
 		"lint": "biome lint ./src",
 		"format": "biome format --write ./src",
-		"test": "vitest"
+		"test:unit": "vitest --run tests/*.test.ts",
+		"test:integration": "vitest --run tests/integration/*.test.ts",
+		"test:e2e": "echo 'not implemented yet'",
+		"test:unit:watch": "vitest tests/*.test.ts",
+		"test:integration:watch": "vitest tests/integration/*.test.ts",
+		"test:e2e:watch": "echo 'not implemented yet'",
+		"test": "vitest --run tests/**/*.test.ts",
+		"test:watch": "vitest tests/**/*.test.ts"
 	},
 	"keywords": [
 		"database",
