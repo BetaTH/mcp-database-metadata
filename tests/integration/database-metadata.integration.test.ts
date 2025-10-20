@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { execSync } from "child_process";
 import { createGetTableDetailsToolFunction } from "../../src/tools/get-table-details";
-import { DatabasesConfig } from "../../src/schemas/config";
+import { DatabaseConnections } from "../../src/schemas/config";
 import { tableDetailsResponseSchema } from "../../src/schemas/get-table-details";
 
-const testDbConfigs: DatabasesConfig = [
+const testDbConfigs: DatabaseConnections = [
 	{
-		name: "mysqldb",
+		connectionName: "mysqldb",
 		config: {
 			client: "mysql2",
 			connection: {
@@ -19,7 +19,7 @@ const testDbConfigs: DatabasesConfig = [
 		},
 	},
 	{
-		name: "postgresdb",
+		connectionName: "postgresdb",
 		config: {
 			client: "pg",
 			connection: {
@@ -36,13 +36,19 @@ const testDbConfigs: DatabasesConfig = [
 describe("createGetTableDetailsToolFunction - Integration", () => {
 	beforeAll(() => {
 		console.log("Starting test databases with Docker Compose...");
-		execSync("docker compose -f tests/integration/test-db/docker-compose.yml up -d --wait", { stdio: "inherit" });
+		execSync(
+			"docker compose -f tests/integration/test-db/docker-compose.yml up -d --wait",
+			{ stdio: "inherit" },
+		);
 		console.log("Databases are ready.");
 	}, 60000); // Aumenta o timeout para o beforeAll
 
 	afterAll(() => {
 		console.log("Tearing down test databases...");
-		execSync("docker compose -f tests/integration/test-db/docker-compose.yml down -v", { stdio: "inherit" });
+		execSync(
+			"docker compose -f tests/integration/test-db/docker-compose.yml down -v",
+			{ stdio: "inherit" },
+		);
 		console.log("Databases torn down.");
 	});
 

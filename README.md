@@ -39,37 +39,40 @@ Este comando criará o arquivo `settings.json` no seguinte local, dependendo do 
 -   **Local**: Você pode criar um arquivo chamado `mcp-database-metadata.settings.json` na raiz do seu projeto. As configurações neste arquivo sobrescreverão as do arquivo global.
 -   **Via Argumento**: Você pode especificar um caminho para um arquivo de configuração ao iniciar o servidor. Esta configuração tem a maior prioridade.
 
+### Criando o Arquivo de Configuração Global de Forma Manual
+
+Crie um arquivo chamado `settings.json` no seguinte local, dependendo do seu sistema operacional:
+
+-   **Linux/macOS**: `~/.mcp-database-metadata/settings.json`
+-   **Windows**: `C:\Users\<SeuUsuario>\.mcp-database-metadata\settings.json`
+
 ### Exemplo de `settings.json`
 
 O arquivo de configuração permite definir uma lista de bancos de dados. O servidor usará [Knex.js](https://knexjs.org/) para se conectar, então a configuração deve ser compatível.
 
 ```json
 {
-  "databases": [
+  "databaseConnections": [
     {
-      "name": "meu_banco_pg",
-      "config": {
-        "client": "pg",
-        "connection": {
-          "host": "127.0.0.1",
-          "port": 5432,
-          "user": "usuario_pg",
-          "password": "senha_pg",
-          "database": "banco_de_dados_1"
-        }
+      "connectionName": "meu_banco_pg",
+      "client": "pg",
+      "connection": {
+        "host": "127.0.0.1",
+        "port": 5432,
+        "user": "usuario_pg",
+        "password": "senha_pg",
+        "database": "banco_de_dados_1"
       }
     },
     {
-      "name": "meu_banco_mysql",
-      "config": {
-        "client": "mysql2",
-        "connection": {
-          "host": "127.0.0.1",
-          "port": 3306,
-          "user": "usuario_mysql",
-          "password": "senha_mysql",
-          "database": "banco_de_dados_2"
-        }
+      "connectionName": "meu_banco_mysql",
+      "client": "mysql",
+      "connection": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "user": "usuario_mysql",
+        "password": "senha_mysql",
+        "database": "banco_de_dados_2"
       }
     }
   ]
@@ -158,8 +161,6 @@ Para executar os testes, utilize o comando:
 pnpm test
 ```
 
-Consulte o arquivo `TESTING_GUIDELINES.md` para mais detalhes sobre a arquitetura de testes.
-
 ## 🏗️ Desenvolvimento
 
 -   **Executar em modo de desenvolvimento (com hot-reload):**
@@ -176,3 +177,19 @@ Consulte o arquivo `TESTING_GUIDELINES.md` para mais detalhes sobre a arquitetur
     ```
 -   **Formatação e Lint:**
     Este projeto usa o [Biome](https://biomejs.dev/) para formatação e lint. Verifique o arquivo `biome.json` para as regras.
+
+## 🤖 Exemplo de Configuração em Clientes MCP (Gemini CLI)
+
+Para usar este servidor MCP com o Gemini CLI, adicione a seguinte configuração ao seu arquivo `settings.json` do Gemini CLI:
+
+```json
+{
+  "mcpServers": {
+    "databaseDetails": {
+      "command": "npx",
+      "args": ["mcp-database-metadata"],
+      "trust": true
+    }
+  }
+}
+```
