@@ -1,15 +1,15 @@
 import knex, { Knex } from "knex";
-import { DatabasesConfig } from "../../schemas/config";
+import { DatabaseConnections } from "../../schemas/config";
 
 /**
  * Retorna uma instância do Knex para o banco de dados especificado.
  */
 export function getDbConnection(
 	connectionName: string,
-	databases: DatabasesConfig,
+	databases: DatabaseConnections,
 ): Knex {
 	const config = databases.find(
-		(database) => database.name === connectionName,
+		(database) => database.connectionName === connectionName,
 	)?.config;
 	if (!config) {
 		throw new Error(
