@@ -1,13 +1,13 @@
-name: Publish to NPM
+name: Before Merge Checks
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  publish:
-    name: Publish to NPM
+  build:
+    name: Build Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,8 +30,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: Publish to NPM
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
