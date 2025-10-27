@@ -5,6 +5,10 @@
 /dist
 /build
 
+.opencode
+openspec
+AGENTS.md
+
 # Logs
 logs
 *.log

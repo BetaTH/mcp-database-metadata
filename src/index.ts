@@ -12,7 +12,7 @@ function initServer() {
 	const config = loadConfiguration(process.env.MCP_CONFIG_PATH);
 
 	registerTools(mcpServer, config);
-	registerPrompts(mcpServer);
+	registerPrompts(mcpServer, config);
 }
 
 initServer();
