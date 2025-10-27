@@ -14,7 +14,7 @@ import { loadConfiguration } from "./config-loader";
 async function startServer(config?: Config) {
 	const transport = new StdioServerTransport();
 	registerTools(mcpServer, config);
-	registerPrompts(mcpServer);
+	registerPrompts(mcpServer, config);
 
 	await mcpServer.connect(transport);
 

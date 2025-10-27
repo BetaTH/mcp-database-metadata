@@ -19,8 +19,17 @@ const databaseConnectionsConfigSchema = z
 	)
 	.describe("Configurações para conexão com o banco de dados");
 
+const dynamicPromptSchema = z.object({
+	name: z.string(),
+	title: z.string(),
+	description: z.string(),
+	prompt: z.string(),
+	enableUserInstructions: z.boolean().default(true),
+});
+
 export const configSchema = z.object({
 	databaseConnections: databaseConnectionsConfigSchema,
+	prompts: z.array(dynamicPromptSchema).optional(),
 });
 
 export type Config = z.infer<typeof configSchema>;
