@@ -41,7 +41,7 @@ describe("createGetTableDetailsToolFunction - Integration", () => {
 			{ stdio: "inherit" },
 		);
 		console.log("Databases are ready.");
-	}, 60000); // Aumenta o timeout para o beforeAll
+	}, 100000); // Aumenta o timeout para o beforeAll
 
 	afterAll(() => {
 		console.log("Tearing down test databases...");
