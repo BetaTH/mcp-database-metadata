@@ -74,7 +74,7 @@ export function loadConfiguration(cliPath?: string): Config | undefined {
 
 	try {
 		const validatedConfig = configSchema.parse(mergedConfig);
-		console.log("Configuração carregada e validada com sucesso.");
+		console.error("Configuração carregada e validada com sucesso.");
 		return validatedConfig;
 	} catch (error) {
 		console.warn(

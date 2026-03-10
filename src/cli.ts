@@ -6,7 +6,6 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import { Config } from "./schemas/config";
-import { Command } from "commander";
 import { loadConfiguration } from "./config-loader";
 
 export function createDefaultConfig(): Config {
@@ -34,64 +33,71 @@ async function startServer(config?: Config) {
 	const server = createMcpServer(config);
 
 	await server.connect(transport);
+	process.stdin.resume();
 
 	console.error("🚀 Servidor MCP de Saudação iniciado!");
 	console.error("📡 Aguardando conexões...");
+
+	await new Promise(() => {});
 }
 
-function createProgram() {
-	const program = new Command();
+function writeDefaultConfig() {
+	const defaultConfig = createDefaultConfig();
 
-	program
-		.name("meu-servidor-mpc-cli")
-		.description(
-			"Inicia um servidor MPC com configurações dinâmicas a partir de um arquivo JSON.",
-		)
-		.version("1.0.0")
-		.option(
-			"-c, --config <path>",
-			"Caminho para o arquivo de configuração JSON.",
-		)
-		.action(async (options) => {
-			const config = loadConfiguration(options.config);
-			await startServer(config);
-		});
+	const globalConfigDir = path.join(os.homedir(), ".mcp-database-metadata");
+	const globalConfigPath = path.join(globalConfigDir, "settings.json");
 
-	program
-		.command("init")
-		.description("Cria arquivos de configuração iniciais.")
-		.action(() => {
-			const defaultConfig = createDefaultConfig();
+	if (!fs.existsSync(globalConfigDir)) {
+		fs.mkdirSync(globalConfigDir, { recursive: true });
+	}
 
-			const globalConfigDir = path.join(os.homedir(), ".mcp-database-metadata");
-			const globalConfigPath = path.join(globalConfigDir, "settings.json");
+	fs.writeFileSync(globalConfigPath, JSON.stringify(defaultConfig, null, 2));
 
-			if (!fs.existsSync(globalConfigDir)) {
-				fs.mkdirSync(globalConfigDir, { recursive: true });
-			}
+	console.log(`Arquivo de configuração global criado em: ${globalConfigPath}`);
 
-			fs.writeFileSync(globalConfigPath, JSON.stringify(defaultConfig, null, 2));
-
-			console.log(
-				`Arquivo de configuração global criado em: ${globalConfigPath}`,
-			);
-
-			const localConfigPath = "mcp-database-metadata.settings.json";
-			console.log(
-				`Você também pode criar um arquivo de configuração local neste diretório chamado '${localConfigPath}' para sobrescrever as configurações globais.
+	const localConfigPath = "mcp-database-metadata.settings.json";
+	console.log(
+		`Você também pode criar um arquivo de configuração local neste diretório chamado '${localConfigPath}' para sobrescrever as configurações globais.
 `,
-			);
-		});
+	);
+}
 
-	return program;
+function parseArgs(argv: string[]) {
+	const args = argv.slice(2);
+
+	if (args[0] === "init") {
+		return { command: "init" as const };
+	}
+
+	let configPath: string | undefined;
+	for (let index = 0; index < args.length; index++) {
+		const arg = args[index];
+		if (arg === "-c" || arg === "--config") {
+			configPath = args[index + 1];
+			index++;
+		}
+	}
+
+	return {
+		command: "start" as const,
+		configPath,
+	};
 }
 
 async function main(argv: string[]) {
-	await createProgram().parseAsync(argv);
+	const parsedArgs = parseArgs(argv);
+
+	if (parsedArgs.command === "init") {
+		writeDefaultConfig();
+		return;
+	}
+
+	const config = loadConfiguration(parsedArgs.configPath);
+	await startServer(config);
 }
 
 if (require.main === module) {
 	void main(process.argv);
 }
 
-export { createProgram, main };
+export { main, parseArgs, writeDefaultConfig };
