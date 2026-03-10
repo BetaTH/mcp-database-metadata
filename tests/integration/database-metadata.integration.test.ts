@@ -11,7 +11,7 @@ const testDbConfigs: DatabaseConnections = [
 			client: "mysql2",
 			connection: {
 				host: "localhost",
-				port: 3306,
+				port: 33306,
 				user: "testuser",
 				password: "testpassword",
 				database: "testdb",
@@ -24,7 +24,7 @@ const testDbConfigs: DatabaseConnections = [
 			client: "pg",
 			connection: {
 				host: "localhost",
-				port: 5432,
+				port: 55432,
 				user: "testuser",
 				password: "testpassword",
 				database: "testdb",
@@ -50,7 +50,7 @@ describe("createGetTableDetailsToolFunction - Integration", () => {
 			{ stdio: "inherit" },
 		);
 		console.log("Databases torn down.");
-	});
+	}, 100000);
 
 	it("should return full details for a MySQL table and parse correctly", async () => {
 		const getTableDetails = createGetTableDetailsToolFunction(testDbConfigs);
