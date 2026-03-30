@@ -19,5 +19,25 @@ AFTER INSERT ON products
 FOR EACH ROW
 BEGIN
     -- Logic for the trigger
-END$$ 
+END$$
+DELIMITER ;
+
+GRANT SHOW_ROUTINE ON *.* TO 'testuser'@'%';
+
+DELIMITER $$
+CREATE PROCEDURE get_user_count(OUT total INT)
+BEGIN
+    SELECT COUNT(*) INTO total FROM users;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE FUNCTION get_username(user_id INT)
+RETURNS VARCHAR(50)
+READS SQL DATA
+BEGIN
+    DECLARE result VARCHAR(50);
+    SELECT username INTO result FROM users WHERE id = user_id;
+    RETURN result;
+END$$
 DELIMITER ;

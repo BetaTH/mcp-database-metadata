@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { execSync } from "child_process";
 import { createGetTableDetailsToolFunction } from "../../src/tools/get-table-details";
+import { createGetProcedureDetailsToolFunction } from "../../src/tools/get-procedure-details";
 import { DatabaseConnections } from "../../src/schemas/config";
 import { tableDetailsResponseSchema } from "../../src/schemas/get-table-details";
+import { procedureDetailsResponseSchema } from "../../src/schemas/get-procedure-details";
 
 const testDbConfigs: DatabaseConnections = [
 	{
@@ -77,5 +79,52 @@ describe("createGetTableDetailsToolFunction - Integration", () => {
 		expect(result.primaryKeyConstraint?.columns).toEqual(["id"]);
 		expect(result.foreignKeyConstraints.length).toBe(1);
 		expect(result.triggers.length).toBe(1);
+	});
+
+	it("should return the DDL for an existing MySQL stored procedure", async () => {
+		const getProcedureDetails =
+			createGetProcedureDetailsToolFunction(testDbConfigs);
+
+		const result = await getProcedureDetails({
+			connectionName: "mysqldb",
+			procedureName: "get_user_count",
+			routineType: "PROCEDURE",
+		});
+
+		expect(() => procedureDetailsResponseSchema.parse(result)).not.toThrow();
+		expect(result.procedureName).toBe("get_user_count");
+		expect(result.routineType).toBe("PROCEDURE");
+		expect(result.ddl).toBeTruthy();
+		expect(result.ddl.toLowerCase()).toContain("select count");
+	});
+
+	it("should return the DDL for an existing MySQL function", async () => {
+		const getProcedureDetails =
+			createGetProcedureDetailsToolFunction(testDbConfigs);
+
+		const result = await getProcedureDetails({
+			connectionName: "mysqldb",
+			procedureName: "get_username",
+			routineType: "FUNCTION",
+		});
+
+		expect(() => procedureDetailsResponseSchema.parse(result)).not.toThrow();
+		expect(result.procedureName).toBe("get_username");
+		expect(result.routineType).toBe("FUNCTION");
+		expect(result.ddl).toBeTruthy();
+		expect(result.ddl.toLowerCase()).toContain("select username");
+	});
+
+	it("should throw a descriptive error for a non-existent procedure", async () => {
+		const getProcedureDetails =
+			createGetProcedureDetailsToolFunction(testDbConfigs);
+
+		await expect(
+			getProcedureDetails({
+				connectionName: "mysqldb",
+				procedureName: "this_procedure_does_not_exist",
+				routineType: "PROCEDURE",
+			}),
+		).rejects.toThrow("this_procedure_does_not_exist");
 	});
 });

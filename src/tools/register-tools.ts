@@ -7,6 +7,11 @@ import { createGetTableDetailsToolFunction } from "./get-table-details";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getDatabaseConnectionsAvailableResponse } from "../schemas/get-database-connections-available";
 import { createGetDatabaseConnectionsAvailableToolFunction } from "./get-databases-connections-available";
+import {
+	procedureDetailsRequestSchema,
+	procedureDetailsResponseSchema,
+} from "../schemas/get-procedure-details";
+import { createGetProcedureDetailsToolFunction } from "./get-procedure-details";
 
 function registerTools(server: McpServer, config?: Config) {
 	if (config) {
@@ -17,6 +22,9 @@ function registerTools(server: McpServer, config?: Config) {
 			createGetDatabaseConnectionsAvailableToolFunction(
 				config.databaseConnections,
 			);
+		const getProcedureDetails = createGetProcedureDetailsToolFunction(
+			config.databaseConnections,
+		);
 
 		server.registerTool(
 			"get-databases-available",
@@ -45,6 +53,28 @@ function registerTools(server: McpServer, config?: Config) {
 			},
 			async ({ connectionName, tableName }) => {
 				const output = await getTableDetails({ connectionName, tableName });
+				return {
+					content: [{ type: "text", text: JSON.stringify(output) }],
+					structuredContent: output,
+				};
+			},
+		);
+
+		server.registerTool(
+			"get-procedure-details",
+			{
+				title: "DDL de procedure ou function",
+				description:
+					"Retorna o SQL completo (DDL) de uma stored procedure ou function MySQL a partir do nome da rotina",
+				inputSchema: procedureDetailsRequestSchema.shape,
+				outputSchema: procedureDetailsResponseSchema.shape,
+			},
+			async ({ connectionName, procedureName, routineType }) => {
+				const output = await getProcedureDetails({
+					connectionName,
+					procedureName,
+					routineType,
+				});
 				return {
 					content: [{ type: "text", text: JSON.stringify(output) }],
 					structuredContent: output,
