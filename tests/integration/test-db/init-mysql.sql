@@ -22,6 +22,11 @@ BEGIN
 END$$
 DELIMITER ;
 
+CREATE VIEW user_products AS
+SELECT u.id AS user_id, u.username, p.id AS product_id, p.name AS product_name
+FROM users u
+INNER JOIN products p ON p.user_id = u.id;
+
 GRANT SHOW_ROUTINE ON *.* TO 'testuser'@'%';
 
 DELIMITER $$
