@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { execSync } from "child_process";
 import { createGetTableDetailsToolFunction } from "../../src/tools/get-table-details";
-import { createGetProcedureDetailsToolFunction } from "../../src/tools/get-procedure-details";
+import { createGetDdlDetailsToolFunction } from "../../src/tools/get-ddl-details";
 import { DatabaseConnections } from "../../src/schemas/config";
 import { tableDetailsResponseSchema } from "../../src/schemas/get-table-details";
-import { procedureDetailsResponseSchema } from "../../src/schemas/get-procedure-details";
+import { ddlDetailsResponseSchema } from "../../src/schemas/get-ddl-details";
 
 const testDbConfigs: DatabaseConnections = [
 	{
@@ -82,48 +82,77 @@ describe("createGetTableDetailsToolFunction - Integration", () => {
 	});
 
 	it("should return the DDL for an existing MySQL stored procedure", async () => {
-		const getProcedureDetails =
-			createGetProcedureDetailsToolFunction(testDbConfigs);
+		const getDdlDetails = createGetDdlDetailsToolFunction(testDbConfigs);
 
-		const result = await getProcedureDetails({
+		const result = await getDdlDetails({
 			connectionName: "mysqldb",
-			procedureName: "get_user_count",
-			routineType: "PROCEDURE",
+			objectName: "get_user_count",
+			objectType: "PROCEDURE",
 		});
 
-		expect(() => procedureDetailsResponseSchema.parse(result)).not.toThrow();
-		expect(result.procedureName).toBe("get_user_count");
-		expect(result.routineType).toBe("PROCEDURE");
+		expect(() => ddlDetailsResponseSchema.parse(result)).not.toThrow();
+		expect(result.objectName).toBe("get_user_count");
+		expect(result.objectType).toBe("PROCEDURE");
 		expect(result.ddl).toBeTruthy();
 		expect(result.ddl.toLowerCase()).toContain("select count");
 	});
 
 	it("should return the DDL for an existing MySQL function", async () => {
-		const getProcedureDetails =
-			createGetProcedureDetailsToolFunction(testDbConfigs);
+		const getDdlDetails = createGetDdlDetailsToolFunction(testDbConfigs);
 
-		const result = await getProcedureDetails({
+		const result = await getDdlDetails({
 			connectionName: "mysqldb",
-			procedureName: "get_username",
-			routineType: "FUNCTION",
+			objectName: "get_username",
+			objectType: "FUNCTION",
 		});
 
-		expect(() => procedureDetailsResponseSchema.parse(result)).not.toThrow();
-		expect(result.procedureName).toBe("get_username");
-		expect(result.routineType).toBe("FUNCTION");
+		expect(() => ddlDetailsResponseSchema.parse(result)).not.toThrow();
+		expect(result.objectName).toBe("get_username");
+		expect(result.objectType).toBe("FUNCTION");
 		expect(result.ddl).toBeTruthy();
 		expect(result.ddl.toLowerCase()).toContain("select username");
 	});
 
-	it("should throw a descriptive error for a non-existent procedure", async () => {
-		const getProcedureDetails =
-			createGetProcedureDetailsToolFunction(testDbConfigs);
+	it("should return the DDL for an existing MySQL table", async () => {
+		const getDdlDetails = createGetDdlDetailsToolFunction(testDbConfigs);
+
+		const result = await getDdlDetails({
+			connectionName: "mysqldb",
+			objectName: "users",
+			objectType: "TABLE",
+		});
+
+		expect(() => ddlDetailsResponseSchema.parse(result)).not.toThrow();
+		expect(result.objectName).toBe("users");
+		expect(result.objectType).toBe("TABLE");
+		expect(result.ddl).toBeTruthy();
+		expect(result.ddl.toLowerCase()).toContain("create table");
+	});
+
+	it("should return the DDL for an existing MySQL view", async () => {
+		const getDdlDetails = createGetDdlDetailsToolFunction(testDbConfigs);
+
+		const result = await getDdlDetails({
+			connectionName: "mysqldb",
+			objectName: "user_products",
+			objectType: "VIEW",
+		});
+
+		expect(() => ddlDetailsResponseSchema.parse(result)).not.toThrow();
+		expect(result.objectName).toBe("user_products");
+		expect(result.objectType).toBe("VIEW");
+		expect(result.ddl).toBeTruthy();
+		expect(result.ddl.toLowerCase()).toContain("select");
+	});
+
+	it("should throw a descriptive error for a non-existent object", async () => {
+		const getDdlDetails = createGetDdlDetailsToolFunction(testDbConfigs);
 
 		await expect(
-			getProcedureDetails({
+			getDdlDetails({
 				connectionName: "mysqldb",
-				procedureName: "this_procedure_does_not_exist",
-				routineType: "PROCEDURE",
+				objectName: "this_procedure_does_not_exist",
+				objectType: "PROCEDURE",
 			}),
 		).rejects.toThrow("this_procedure_does_not_exist");
 	});

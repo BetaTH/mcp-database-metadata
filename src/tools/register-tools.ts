@@ -8,10 +8,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getDatabaseConnectionsAvailableResponse } from "../schemas/get-database-connections-available";
 import { createGetDatabaseConnectionsAvailableToolFunction } from "./get-databases-connections-available";
 import {
-	procedureDetailsRequestSchema,
-	procedureDetailsResponseSchema,
-} from "../schemas/get-procedure-details";
-import { createGetProcedureDetailsToolFunction } from "./get-procedure-details";
+	ddlDetailsRequestSchema,
+	ddlDetailsResponseSchema,
+} from "../schemas/get-ddl-details";
+import { createGetDdlDetailsToolFunction } from "./get-ddl-details";
 
 function registerTools(server: McpServer, config?: Config) {
 	if (config) {
@@ -22,7 +22,7 @@ function registerTools(server: McpServer, config?: Config) {
 			createGetDatabaseConnectionsAvailableToolFunction(
 				config.databaseConnections,
 			);
-		const getProcedureDetails = createGetProcedureDetailsToolFunction(
+		const getDdlDetails = createGetDdlDetailsToolFunction(
 			config.databaseConnections,
 		);
 
@@ -61,19 +61,19 @@ function registerTools(server: McpServer, config?: Config) {
 		);
 
 		server.registerTool(
-			"get-procedure-details",
+			"get-ddl-details",
 			{
-				title: "DDL de procedure ou function",
+				title: "DDL de procedure, function, view ou tabela",
 				description:
-					"Retorna o SQL completo (DDL) de uma stored procedure ou function MySQL a partir do nome da rotina",
-				inputSchema: procedureDetailsRequestSchema.shape,
-				outputSchema: procedureDetailsResponseSchema.shape,
+					"Retorna o SQL completo (DDL) de uma stored procedure, function, view ou tabela MySQL a partir do nome do objeto",
+				inputSchema: ddlDetailsRequestSchema.shape,
+				outputSchema: ddlDetailsResponseSchema.shape,
 			},
-			async ({ connectionName, procedureName, routineType }) => {
-				const output = await getProcedureDetails({
+			async ({ connectionName, objectName, objectType }) => {
+				const output = await getDdlDetails({
 					connectionName,
-					procedureName,
-					routineType,
+					objectName,
+					objectType,
 				});
 				return {
 					content: [{ type: "text", text: JSON.stringify(output) }],
