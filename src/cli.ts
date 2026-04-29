@@ -92,7 +92,9 @@ async function main(argv: string[]) {
 		return;
 	}
 
-	const config = loadConfiguration(parsedArgs.configPath);
+	const config = loadConfiguration(
+		parsedArgs.configPath ?? process.env.MCP_CONFIG_PATH,
+	);
 	await startServer(config);
 }
 

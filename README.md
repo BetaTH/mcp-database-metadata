@@ -55,24 +55,28 @@ O arquivo de configuração permite definir uma lista de bancos de dados. O serv
   "databaseConnections": [
     {
       "connectionName": "meu_banco_pg",
-      "client": "pg",
-      "connection": {
-        "host": "127.0.0.1",
-        "port": 5432,
-        "user": "usuario_pg",
-        "password": "senha_pg",
-        "database": "banco_de_dados_1"
+      "config": {
+        "client": "pg",
+        "connection": {
+          "host": "127.0.0.1",
+          "port": 5432,
+          "user": "usuario_pg",
+          "password": "senha_pg",
+          "database": "banco_de_dados_1"
+        }
       }
     },
     {
       "connectionName": "meu_banco_mysql",
-      "client": "mysql",
-      "connection": {
-        "host": "127.0.0.1",
-        "port": 3306,
-        "user": "usuario_mysql",
-        "password": "senha_mysql",
-        "database": "banco_de_dados_2"
+      "config": {
+        "client": "mysql2",
+        "connection": {
+          "host": "127.0.0.1",
+          "port": 3306,
+          "user": "usuario_mysql",
+          "password": "senha_mysql",
+          "database": "banco_de_dados_2"
+        }
       }
     }
   ]
@@ -117,19 +121,26 @@ Para usar um arquivo de configuração específico, defina a variável de ambien
 MCP_CONFIG_PATH=./caminho/para/config.json pnpm start
 ```
 
+No PowerShell:
+
+```powershell
+$env:MCP_CONFIG_PATH = "C:\caminho\para\config.json"
+npx -y mcp-database-metadata
+```
+
 ### Modo 2: Linha de Comando (CLI)
 
 Perfeito para uso sob demanda com `npx`, sem a necessidade de clonar o projeto. É a forma recomendada para integrar com outras ferramentas, como o Context7.
 
 -   **Para iniciar o servidor com a configuração padrão (local e global):**
     ```bash
-    npx mcp-database-metadata
+    npx -y mcp-database-metadata
     ```
 -   **Para especificar um arquivo de configuração:**
     ```bash
-    npx mcp-database-metadata -c ./caminho/para/config.json
+    npx -y mcp-database-metadata -c ./caminho/para/config.json
     # ou
-    npx mcp-database-metadata --config ./caminho/para/config.json
+    npx -y mcp-database-metadata --config ./caminho/para/config.json
     ```
 
 ## 🛠️ Ferramentas e Prompts Disponíveis
@@ -187,7 +198,40 @@ Para usar este servidor MCP com o Gemini CLI, adicione a seguinte configuração
   "mcpServers": {
     "databaseDetails": {
       "command": "npx",
-      "args": ["mcp-database-metadata"],
+      "args": ["-y", "mcp-database-metadata"],
+      "trust": true
+    }
+  }
+}
+```
+
+No Windows, alguns clientes MCP executam processos sem passar pelo shell e não conseguem resolver `npx` diretamente. Nesse caso, use `npx.cmd`:
+
+```json
+{
+  "mcpServers": {
+    "databaseDetails": {
+      "command": "npx.cmd",
+      "args": ["-y", "mcp-database-metadata"],
+      "trust": true
+    }
+  }
+}
+```
+
+Se o cliente MCP não herdar o diretório onde está seu arquivo local, passe um caminho absoluto:
+
+```json
+{
+  "mcpServers": {
+    "databaseDetails": {
+      "command": "npx.cmd",
+      "args": [
+        "-y",
+        "mcp-database-metadata",
+        "--config",
+        "C:\\Users\\SeuUsuario\\.mcp-database-metadata\\settings.json"
+      ],
       "trust": true
     }
   }

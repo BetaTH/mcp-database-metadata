@@ -14,7 +14,10 @@ const sessionTransports = new Map<
 	{ server: McpServer; transport: StreamableHTTPServerTransport }
 >();
 
-async function handleStatelessRequest(req: express.Request, res: express.Response) {
+async function handleStatelessRequest(
+	req: express.Request,
+	res: express.Response,
+) {
 	const server = createMcpServer(config);
 	const transport = new StreamableHTTPServerTransport({
 		sessionIdGenerator: undefined,
